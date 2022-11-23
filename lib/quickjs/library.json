@@ -1,0 +1,23 @@
+{
+    "name": "quickjs",
+    "version": "2021.03.27",
+    "keywords": "quickjs, javascript",
+    "description": "QuickJS is a small and embeddable Javascript engine. It supports the ES2020 specification including modules, asynchronous generators, proxies and BigInt.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bellard/quickjs"
+    },
+    "build": {
+        "includeDir": "./",
+        "srcDir": "./",
+        "srcFilter":[
+            "+<*.c>",
+            "-<qjs.c>",
+            "-<qjsc.c>",
+            "-<run-test262.c>",
+            "-<quickjs-libc.c>"
+
+        ]
+    },
+    "dependencies": []
+}

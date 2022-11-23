@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "VERSION.h"
 
 #ifdef __cplusplus
 extern "C" {

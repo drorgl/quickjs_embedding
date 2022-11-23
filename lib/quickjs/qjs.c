@@ -150,6 +150,8 @@ static inline size_t js_trace_malloc_usable_size(void *ptr)
     return 0;
 #elif defined(__linux__)
     return malloc_usable_size(ptr);
+#elif defined(ESP_PLATFORM)
+    return 0; //TODO: replace with real function
 #else
     /* change this to `return 0;` if compilation fails */
     return malloc_usable_size(ptr);
@@ -454,8 +456,10 @@ int main(int argc, char **argv)
         }
     }
 
+#ifdef CONFIG_BIGNUM
     if (load_jscalc)
         bignum_ext = 1;
+#endif
 
     if (trace_memory) {
         js_trace_malloc_init(&trace_data);

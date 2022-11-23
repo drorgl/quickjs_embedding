@@ -41,6 +41,8 @@
 #include <windows.h>
 #include <conio.h>
 #include <utime.h>
+#elif defined(ESP_PLATFORM)
+//TODO?
 #else
 #include <dlfcn.h>
 #include <termios.h>

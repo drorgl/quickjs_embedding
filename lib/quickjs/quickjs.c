@@ -40,6 +40,11 @@
 #include <malloc_np.h>
 #endif
 
+#if defined(ESP_PLATFORM)
+#include <stdint.h>
+#include <esp_types.h>
+#endif
+
 #include "cutils.h"
 #include "list.h"
 #include "quickjs.h"
@@ -69,7 +74,7 @@
 
 /* define to include Atomics.* operations which depend on the OS
    threads */
-#if !defined(EMSCRIPTEN)
+#if !defined(EMSCRIPTEN) && !defined(ESP_PLATFORM)
 #define CONFIG_ATOMICS
 #endif
 
@@ -1684,6 +1689,8 @@ static inline size_t js_def_malloc_usable_size(void *ptr)
     return 0;
 #elif defined(__linux__)
     return malloc_usable_size(ptr);
+#elif defined(ESP_PLATFORM)
+    return 0; //TODO: replace with real function
 #else
     /* change this to `return 0;` if compilation fails */
     return malloc_usable_size(ptr);
@@ -1758,6 +1765,8 @@ static const JSMallocFunctions def_malloc_funcs = {
     NULL,
 #elif defined(__linux__)
     (size_t (*)(const void *))malloc_usable_size,
+#elif defined(ESP_PLATFORM)
+    NULL,
 #else
     /* change this to `NULL,` if compilation fails */
     malloc_usable_size,
@@ -10802,7 +10811,7 @@ static int JS_ToInt64Free(JSContext *ctx, int64_t *pres, JSValue val)
         break;
     case JS_TAG_FLOAT64:
         {
-            JSFloat64Union u;
+            JSFloat64Union u;            
             double d;
             int e;
             d = JS_VALUE_GET_FLOAT64(val);
@@ -42016,6 +42025,8 @@ static int getTimezoneOffset(int64_t time) {
 #if defined(_WIN32)
     /* XXX: TODO */
     return 0;
+#elif defined(ESP_PLATFORM)
+    return 0; //TODO: handle
 #else
     time_t ti;
     struct tm tm;
