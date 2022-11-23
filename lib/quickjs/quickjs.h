@@ -108,7 +108,7 @@ typedef const struct __JSValue *JSValueConst;
 #define JS_VALUE_GET_NORM_TAG(v) JS_VALUE_GET_TAG(v)
 #define JS_VALUE_GET_INT(v) (int)((intptr_t)(v) >> 4)
 #define JS_VALUE_GET_BOOL(v) JS_VALUE_GET_INT(v)
-#define JS_VALUE_GET_FLOAT64(v) (double)JS_VALUE_GET_INT(v)
+#define JS_VALUE_GET_FLOAT64(v) (float)JS_VALUE_GET_INT(v)
 #define JS_VALUE_GET_PTR(v) (void *)((intptr_t)(v) & ~0xf)
 
 #define JS_MKVAL(tag, val) (JSValue)(intptr_t)(((val) << 4) | (tag))
@@ -118,7 +118,7 @@ typedef const struct __JSValue *JSValueConst;
 
 #define JS_NAN JS_MKVAL(JS_TAG_FLOAT64, 1)
 
-static inline JSValue __JS_NewFloat64(JSContext *ctx, double d)
+static inline JSValue __JS_NewFloat64(JSContext *ctx, float d)
 {
     return JS_MKVAL(JS_TAG_FLOAT64, (int)d);
 }
@@ -144,11 +144,11 @@ typedef uint64_t JSValue;
 
 #define JS_FLOAT64_TAG_ADDEND (0x7ff80000 - JS_TAG_FIRST + 1) /* quiet NaN encoding */
 
-static inline double JS_VALUE_GET_FLOAT64(JSValue v)
+static inline float JS_VALUE_GET_FLOAT64(JSValue v)
 {
     union {
         JSValue v;
-        double d;
+        float d;
     } u;
     u.v = v;
     u.v += (uint64_t)JS_FLOAT64_TAG_ADDEND << 32;
@@ -157,10 +157,10 @@ static inline double JS_VALUE_GET_FLOAT64(JSValue v)
 
 #define JS_NAN (0x7ff8000000000000 - ((uint64_t)JS_FLOAT64_TAG_ADDEND << 32))
 
-static inline JSValue __JS_NewFloat64(JSContext *ctx, double d)
+static inline JSValue __JS_NewFloat64(JSContext *ctx, float d)
 {
     union {
-        double d;
+        float d;
         uint64_t u64;
     } u;
     JSValue v;
@@ -197,7 +197,7 @@ static inline JS_BOOL JS_VALUE_IS_NAN(JSValue v)
 
 typedef union JSValueUnion {
     int32_t int32;
-    double float64;
+    float float64;
     void *ptr;
 } JSValueUnion;
 
@@ -223,7 +223,7 @@ typedef struct JSValue {
 
 #define JS_NAN (JSValue){ .u.float64 = JS_FLOAT64_NAN, JS_TAG_FLOAT64 }
 
-static inline JSValue __JS_NewFloat64(JSContext *ctx, double d)
+static inline JSValue __JS_NewFloat64(JSContext *ctx, float d)
 {
     JSValue v;
     v.tag = JS_TAG_FLOAT64;
@@ -234,7 +234,7 @@ static inline JSValue __JS_NewFloat64(JSContext *ctx, double d)
 static inline JS_BOOL JS_VALUE_IS_NAN(JSValue v)
 {
     union {
-        double d;
+        float d;
         uint64_t u64;
     } u;
     if (v.tag != JS_TAG_FLOAT64)
@@ -543,12 +543,12 @@ static js_force_inline JSValue JS_NewUint32(JSContext *ctx, uint32_t val)
 JSValue JS_NewBigInt64(JSContext *ctx, int64_t v);
 JSValue JS_NewBigUint64(JSContext *ctx, uint64_t v);
 
-static js_force_inline JSValue JS_NewFloat64(JSContext *ctx, double d)
+static js_force_inline JSValue JS_NewFloat64(JSContext *ctx, float d)
 {
     JSValue v;
     int32_t val;
     union {
-        double d;
+        float d;
         uint64_t u;
     } u, t;
     u.d = d;
@@ -687,7 +687,7 @@ static inline int JS_ToUint32(JSContext *ctx, uint32_t *pres, JSValueConst val)
 }
 int JS_ToInt64(JSContext *ctx, int64_t *pres, JSValueConst val);
 int JS_ToIndex(JSContext *ctx, uint64_t *plen, JSValueConst val);
-int JS_ToFloat64(JSContext *ctx, double *pres, JSValueConst val);
+int JS_ToFloat64(JSContext *ctx, float *pres, JSValueConst val);
 /* return an exception if 'val' is a Number */
 int JS_ToBigInt64(JSContext *ctx, int64_t *pres, JSValueConst val);
 /* same as JS_ToInt64() but allow BigInt */
@@ -929,8 +929,8 @@ typedef union JSCFunctionType {
     JSCFunction *constructor;
     JSValue (*constructor_magic)(JSContext *ctx, JSValueConst new_target, int argc, JSValueConst *argv, int magic);
     JSCFunction *constructor_or_func;
-    double (*f_f)(double);
-    double (*f_f_f)(double, double);
+    float (*f_f)(float);
+    float (*f_f_f)(float, float);
     JSValue (*getter)(JSContext *ctx, JSValueConst this_val);
     JSValue (*setter)(JSContext *ctx, JSValueConst this_val, JSValueConst val);
     JSValue (*getter_magic)(JSContext *ctx, JSValueConst this_val, int magic);
@@ -989,7 +989,7 @@ typedef struct JSCFunctionListEntry {
         const char *str;
         int32_t i32;
         int64_t i64;
-        double f64;
+        float f64;
     } u;
 } JSCFunctionListEntry;
 
